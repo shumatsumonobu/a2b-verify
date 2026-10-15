@@ -1,0 +1,13 @@
+# 取得物は各自が実行した時点のものを使う
+data/*
+!data/README.md
+
+__pycache__/
+*.pyc
+.venv/
+
+# 作業メモは公開しない
+WIP.md
+
+# Claude Code の手元の許可設定は公開しない
+.claude/settings.json
