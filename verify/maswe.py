@@ -22,8 +22,8 @@ OUT = pathlib.Path(__file__).resolve().parent.parent / "data"
 TARGETS = [
     ("MASVS-STORAGE/MASWE-0004", ["API keys and secrets", "staging or integration URLs"], "鍵をハードコードしない、検証用のURLをリリースに入れない"),
     ("MASVS-STORAGE/MASWE-0005", ["Verbose Logging in Production"], "デバッグログを残さない"),
-    ("MASVS-RESILIENCE/MASWE-0061", ["Verbose Logging and Debug Flows", "Note the distinction from @MASWE-0004"],
-     "デバッグログを残さない、MASWE-0004 との役割の違い"),
+    ("MASVS-RESILIENCE/MASWE-0061", ["leftover debug and test code", "hidden switches enabling debug menus"],
+     "デバッグ用のコードや隠しスイッチを残さない、MASWE-0004 との役割の違い"),
     ("MASVS-RESILIENCE/MASWE-0063", ["android:debuggable"], "表から外した弱点（デバッグ機能を本番で有効にしたまま）"),
 ]
 

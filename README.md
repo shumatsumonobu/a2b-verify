@@ -229,7 +229,7 @@ MASWE は弱点の列挙、MASVS は要求事項で、別の文書
 | [MASWE-0004](https://github.com/OWASP/maswe/blob/main/weaknesses/MASVS-STORAGE/MASWE-0004.md) Sensitive Data Hardcoded in the App Package | 鍵をハードコードしない |
 | [MASWE-0004](https://github.com/OWASP/maswe/blob/main/weaknesses/MASVS-STORAGE/MASWE-0004.md) Sensitive Data Hardcoded in the App Package | 検証用のURLをリリースに入れない |
 | [MASWE-0005](https://github.com/OWASP/maswe/blob/main/weaknesses/MASVS-STORAGE/MASWE-0005.md) Insertion of Sensitive Data into Logs | デバッグログを残さない |
-| [MASWE-0061](https://github.com/OWASP/maswe/blob/main/weaknesses/MASVS-RESILIENCE/MASWE-0061.md) Debug Artifacts Not Removed | デバッグログを残さない |
+| [MASWE-0061](https://github.com/OWASP/maswe/blob/main/weaknesses/MASVS-RESILIENCE/MASWE-0061.md) Debug Artifacts Not Removed | デバッグ用のコードや隠しスイッチをリリースに残さない |
 | [MASVS-AUTH-1](https://github.com/OWASP/masvs/blob/master/controls/MASVS-AUTH-1.md)（MASVS のコントロール） | 認可の判定をアプリ内で完結させない |
 
 <details>
@@ -246,7 +246,7 @@ MASVS-AUTH-1 の原文と筆者訳は[恒久対策](#恒久対策)の折りた�
 </details>
 
 <details>
-<summary>鍵、検証用のURL、デバッグログが含まれる根拠の原文と筆者訳</summary>
+<summary>鍵、検証用のURL、デバッグログ、デバッグ用のコードや隠しスイッチが含まれる根拠の原文と筆者訳</summary>
 
 MASWE-0004 の Overview
 
@@ -258,15 +258,21 @@ MASWE-0004 の Overview
 
 筆者訳 ── 開発者の残し物も含まれる、ステージングや結合テスト用のURL、開発者のメールアドレスやユーザー名、パッケージに残ったソースコードのファイルなど
 
-MASWE-0005 と MASWE-0061 の Modes of Introduction
+MASWE-0005 の Modes of Introduction
 
 > Verbose Logging in Production: Shipping release builds with debug or verbose log levels still enabled
 
-筆者訳 ── 本番での詳細なログ出力、デバッグ用や詳細のログレベルを有効にしたままリリースビルドを出すこと（MASWE-0005）
+筆者訳 ── 本番での詳細なログ出力、デバッグ用や詳細のログレベルを有効にしたままリリースビルドを出すこと
 
-> Verbose Logging and Debug Flows: Leaving verbose or debug-level logging and diagnostic code paths active in production builds.
+MASWE-0061 の Overview
 
-筆者訳 ── 本番ビルドで、詳細ログやデバッグ用のログ、診断用のコードを有効なまま残すこと（MASWE-0061）
+> This weakness occurs when an app ships to production containing developer debug artifacts, such as verbose logging, testing utilities, debugging symbols, or leftover debug and test code.
+
+筆者訳 ── 開発者のデバッグ用の残し物（詳細なログ、テスト用の道具、デバッグシンボル、残ったデバッグやテストのコード）を含んだまま本番に出すと起きる弱点
+
+> most critically, may include backdoors, such as hidden switches enabling debug menus or an insecure trust manager, that can disable security controls like TLS certificate validation
+
+筆者訳 ── 最も重大なのは、デバッグメニューを開く隠しスイッチや安全でないトラストマネージャーのような裏口を含みうることで、TLS の証明書検証などのセキュリティ制御を無効にしうる
 
 </details>
 
@@ -279,7 +285,7 @@ MASWE-0004 と MASWE-0061 の役割の違い ── MASWE-0061 の Overview に�
 
 筆者訳 ── MASWE-0004 との違い、あちらは機密性を損なう開発者の残し物（ステージングURL、開発者の身元、ソースファイル）を扱い、こちらはアプリの耐性を弱めるデバッグ用の残し物を扱う
 
-MASWE-0063 Debug Mechanisms Not Disabled も中身を見たが、`android:debuggable` などのデバッグ機能を本番で有効にしたままにする弱点で、ログやURLの話ではないので表から外した
+MASWE-0063 Debug Mechanisms Not Disabled も中身を見たが、リリースに残る残し物ではなく、`android:debuggable` などでプラットフォームのデバッガを本番で使える設定のまま出す弱点で、表の対策とは別なので外した
 
 </details>
 
@@ -310,7 +316,7 @@ NICT は、公開アプリの解析を完全に防ぐのは困難で、アプリ
   根拠 ── API1:2023 は GUID を Prefer（使うほうがよい）で挙げ、その前に認可の仕組みの実装と全関数での確認を置いている（[恒久対策](#恒久対策)）、NICT も推測・列挙しやすい識別子を、被害が大きくなる条件として書いている（[狙われる脆弱性](#狙われる脆弱性)）
 - **アプリ側の対策では、狙われる4種類の脆弱性は塞がらない**  
   鍵のハードコードを避けるのは、点検項目の固定された認証情報や暗号鍵の露出に当たりうる、アプリに埋め込んだ鍵は解析で取り出せるため  
-  検証用のURLとデバッグログを残さないのは、攻撃の手がかりを減らすもので、4種類そのものは塞がない  
+  検証用のURL、デバッグログ、デバッグ用のコードや隠しスイッチを残さないのは、攻撃の手がかりや抜け道を減らすもので、4種類そのものは塞がない  
   認可の判定をアプリ内で完結させないのは IDOR への対策そのもの、ただし実際に守るのはサーバー側の実装  
   根拠 ── 4種類はどれもバックエンドサーバ側の脆弱性（[狙われる脆弱性](#狙われる脆弱性)）、アプリ側の対策に対応する OWASP の項目はアプリ内の弱点（[アプリ側の対策](#アプリ側の対策)）
 
@@ -337,6 +343,7 @@ python -I verify/check_readme.py
 
 - [verify/links.py](verify/links.py) ── README にある全 URL が開けるか、リポジトリ内のリンク先と見出しがあるかを確かめる、1件でも失敗すれば終了コード 1
 - [verify/check_readme.py](verify/check_readme.py) ── 一次情報を取り直すスクリプトを全部実行し、README の引用が出力に原文どおり出ているかを照合する、1件でも無ければ終了コード 1
+- 照合で なし が出たら、一次情報が改訂された可能性を疑う ── NICT の PDF は Rev 1.1 で末尾に更新履歴があり、[verify/nict.py](verify/nict.py) の出力で版と更新日時を確かめられる、日付ごとの取得物は [data/](data/README.md) に残る
 - `-I`（[Python の分離モード](https://docs.python.org/3/using/cmdline.html#cmdoption-I)）を付けると、スクリプトの隣や今いるディレクトリのファイルを import しない ── 取得したファイルに紛れたコードを読み込まないため
 
 環境ごとの違い
@@ -385,3 +392,6 @@ a2b-verify/
 ## License
 
 MIT ── see [LICENSE](LICENSE)
+
+README に載せた OWASP の原文（MASVS、MASWE、API Security Top 10）と、その筆者訳は [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) ── 出典は本文の各リンク、筆者訳は原文を日本語に訳したもの  
+NICT の原文は [NICT のサイトポリシー](https://www.nict.go.jp/policy/index.html)に沿って、出所を示して引用
