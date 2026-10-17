@@ -34,7 +34,8 @@ def run(script):
 
 
 def readme_quotes(text):
-    quotes = [re.sub(r"^>\s*(-\s*)?", "", l) for l in text.splitlines() if l.startswith(">")]
+    # 引用の行頭の箇条書きの記号（原文に合わせた • と、Markdown の -）は原文ではないので外す
+    quotes = [re.sub(r"^>\s*(?:[-•]\s*)?", "", l) for l in text.splitlines() if l.startswith(">")]
     # 表のセルにある requirement の原文、列の位置に依らず拾う
     quotes += re.findall(r"\| (The app [^|]+?) \|", text)
     return [q for q in quotes if q.strip()]
